@@ -1,13 +1,14 @@
 import { useState } from 'react'
 import type { LucideIcon } from 'lucide-react'
-import { BarChart3, ChevronDown, FileBarChart, LayoutDashboard, LogOut, Settings, Truck, UsersRound } from 'lucide-react'
+import { BarChart3, ChevronDown, FileBarChart, Home, LogOut, Settings, Truck, UsersRound } from 'lucide-react'
 
-export type WorkspaceSection = 'Home Page' | 'Executive Page' | 'Employee Management · AMWEST INC' | 'Employee Management · AMWEST LLC' | 'Employee Management · OCS' | 'Fleet Management' | 'Data & Reports' | 'General Settings' | 'Account Settings'
+export type WorkspaceSection = 'Home Page' | 'Analytics' | 'Employee Management · AMWEST INC' | 'Employee Management · AMWEST LLC' | 'Employee Management · OCS' | 'Fleet Management' | 'Data & Reports' | 'General Settings' | 'Account Settings'
 
 type Group = { label: string; icon: LucideIcon; children?: WorkspaceSection[]; section?: WorkspaceSection }
 
 const groups: Group[] = [
-  { label: 'Executive', icon: LayoutDashboard, children: ['Home Page', 'Executive Page'] },
+  { label: 'Home Page', icon: Home, section: 'Home Page' },
+  { label: 'Analytics', icon: BarChart3, section: 'Analytics' },
   { label: 'Employee Management', icon: UsersRound, children: ['Employee Management · AMWEST INC', 'Employee Management · AMWEST LLC', 'Employee Management · OCS'] },
   { label: 'Fleet Management', icon: Truck, section: 'Fleet Management' },
   { label: 'Data & Reports', icon: FileBarChart, section: 'Data & Reports' },
