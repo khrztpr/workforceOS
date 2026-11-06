@@ -17,7 +17,8 @@ const groups: Group[] = [
 const childLabel = (section: WorkspaceSection) => section.includes(' · ') ? section.split(' · ')[1] : section
 
 export function WorkspaceNav({ active, onSelect, onSignOut }: { active: WorkspaceSection; onSelect: (section: WorkspaceSection) => void; onSignOut: () => void }) {
-  const [expanded, setExpanded] = useState<Record<string, boolean>>({ Executive: true, 'Employee Management': true, Settings: true })
+  // Keep the first authenticated view compact; groups expand only when the user asks.
+  const [expanded, setExpanded] = useState<Record<string, boolean>>({})
   return <aside className="flex h-full w-72 flex-col bg-slate-950 px-4 py-5 text-slate-300 shadow-2xl shadow-slate-950/15">
     <div className="flex items-center gap-3 px-3 text-white"><div className="grid size-9 place-items-center rounded-xl bg-sky-500 shadow-lg shadow-sky-500/20"><BarChart3 className="size-5" /></div><span className="text-lg font-bold tracking-tight">Workforce<span className="text-sky-400">OS</span></span></div>
     <p className="mt-10 px-3 text-[10px] font-bold uppercase tracking-[.18em] text-slate-500">Navigation</p>
