@@ -10,6 +10,15 @@ const json = (body: Record<string, unknown>, status = 200) => new Response(JSON.
 type Payload = { action?: 'list' | 'validate' | 'approve'; import_run_id?: string; organization_slug?: string }
 
 const asText = (value: unknown) => value == null ? null : String(value).trim() || null
+const normalizeDate = (value: unknown): string | null | undefined => {
+  if (value == null || value === '') return null
+  if (value instanceof Date && !Number.isNaN(value.valueOf())) return value.toISOString().slice(0, 10)
+  const text = String(value).trim()
+  if (['not yet set', 'n/a', 'na', 'none', 'not applicable', '-'].includes(text.toLowerCase())) return null
+  const parts = text.match(/^(\d{1,2})[/-](\d{1,2})[/-](\d{4})$/)
+  if (parts) return `${parts[3]}-${parts[1].padStart(2, '0')}-${parts[2].padStart(2, '0')}`
+  return undefined
+}
 
 Deno.serve(async (request) => {
   if (request.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders })
@@ -63,7 +72,11 @@ Deno.serve(async (request) => {
         let value = row[mapping.source_column]
         if (typeof value === 'string' && mapping.transform_rule === 'trim') value = value.trim()
         if (typeof value === 'string' && mapping.transform_rule === 'lowercase_trim') value = value.trim().toLowerCase()
-        if (value instanceof Date && mapping.transform_rule === 'date') value = value.toISOString().slice(0, 10)
+        if (mapping.transform_rule === 'date') {
+          const date = normalizeDate(value)
+          if (date === undefined) errors.push(`${mapping.source_column} must be a valid date`)
+          else value = date
+        }
         normalized[mapping.target_field] = value
         if (mapping.is_required && !asText(value)) errors.push(`${mapping.source_column} is required`)
       }
