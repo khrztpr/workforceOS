@@ -8,7 +8,7 @@ This is the production path for Rippling exports. The browser Import Center rema
 2. In Supabase Dashboard, add an Edge Function secret named `POWER_AUTOMATE_INGEST_SECRET`. Generate a long random value and do not add it to Git, Vercel, or browser variables.
 3. Add the same secret as a sensitive value in each Power Automate flow.
 
-The function validates the secret itself, accepts only `.xlsx` files for the three approved organization slugs, stores the source file privately, records an `uploaded` import run, and returns an existing run for a retry of identical file bytes.
+The function validates the secret itself, accepts only `.xlsx` files for the three approved organization slugs, stores the source file privately, validates the workbook, and directly upserts valid people into the organization-scoped directory. A file with any invalid rows fails as a whole; it never partially updates the directory.
 
 ## Power Automate HTTP action
 
@@ -36,4 +36,4 @@ Do not put a Supabase service-role key in Power Automate. The Edge Function keep
 
 ## Expected response
 
-A new file returns HTTP `201` with `status: uploaded`. A retry of identical bytes returns HTTP `200` with `status: already_queued`; that behavior prevents duplicate runs when Power Automate retries.
+A new valid file returns HTTP `201` with `status: imported`. A retry of identical bytes returns HTTP `200` with `status: already_imported`; that behavior prevents duplicate runs when Power Automate retries.
