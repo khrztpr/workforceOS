@@ -1,12 +1,18 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 import * as XLSX from 'npm:xlsx@0.18.5'
 
-const json = (body: Record<string, unknown>, status = 200) => new Response(JSON.stringify(body), { status, headers: { 'content-type': 'application/json; charset=utf-8' } })
+const corsHeaders = {
+  'access-control-allow-origin': 'https://workforceos-six.vercel.app',
+  'access-control-allow-headers': 'authorization, x-client-info, apikey, content-type',
+  'access-control-allow-methods': 'POST, OPTIONS',
+}
+const json = (body: Record<string, unknown>, status = 200) => new Response(JSON.stringify(body), { status, headers: { ...corsHeaders, 'content-type': 'application/json; charset=utf-8' } })
 type Payload = { action?: 'list' | 'validate' | 'approve'; import_run_id?: string; organization_slug?: string }
 
 const asText = (value: unknown) => value == null ? null : String(value).trim() || null
 
 Deno.serve(async (request) => {
+  if (request.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders })
   if (request.method !== 'POST') return json({ error: 'Method not allowed.' }, 405)
   const url = Deno.env.get('SUPABASE_URL')
   const anonKey = Deno.env.get('SUPABASE_ANON_KEY')
