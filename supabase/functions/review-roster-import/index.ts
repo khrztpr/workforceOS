@@ -17,12 +17,13 @@ Deno.serve(async (request) => {
   const userClient = createClient(url, anonKey, { global: { headers: { Authorization: authorization } }, auth: { persistSession: false, autoRefreshToken: false } })
   const { data: userData } = await userClient.auth.getUser()
   if (!userData.user) return json({ error: 'Unauthorized.' }, 401)
-  const { data: allowed } = await userClient.rpc('is_workforce_admin')
-  if (!allowed) return json({ error: 'Administrator access is required.' }, 403)
+  const admin = createClient(url, serviceRoleKey, { auth: { persistSession: false, autoRefreshToken: false } })
+  const { data: administrator, error: administratorError } = await admin.from('workforce_admins').select('user_id').eq('user_id', userData.user.id).maybeSingle()
+  if (administratorError) return json({ error: 'Could not verify administrator access.' }, 500)
+  if (!administrator) return json({ error: 'Administrator access is required.' }, 403)
 
   let payload: Payload
   try { payload = await request.json() } catch { return json({ error: 'Request body must be JSON.' }, 400) }
-  const admin = createClient(url, serviceRoleKey, { auth: { persistSession: false, autoRefreshToken: false } })
 
   if (payload.action === 'list') {
     const query = admin.from('import_runs').select('id,status,source_file_name,uploaded_at,total_rows,valid_rows,invalid_rows,organizations!inner(slug,name)').order('uploaded_at', { ascending: false }).limit(25)
