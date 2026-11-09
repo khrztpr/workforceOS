@@ -85,7 +85,7 @@ Deno.serve(async (request) => {
   if (rowsError || !validRows?.length) return json({ error: 'This import has no valid rows to approve.' }, 422)
   const people = validRows.map(({ normalized_data: row }) => ({ organization_id: run.organization_id, source_system: run.source_system, source_employee_id: asText(row.source_employee_id), display_name: asText(row.display_name), employment_status: asText(row.employment_status), employment_type: asText(row.employment_type), department: asText(row.department), job_title: asText(row.job_title), manager_source_employee_id: asText(row.manager_source_employee_id), work_location: asText(row.work_location), work_state: asText(row.work_state), hire_date: asText(row.hire_date), regularization_date: asText(row.regularization_date), separation_date: asText(row.separation_date), last_work_date: asText(row.last_work_date), is_manager: row.is_manager === true || row.is_manager === 'true', source_last_seen_at: new Date().toISOString(), active: true, latest_import_run_id: run.id })).filter((row) => row.source_employee_id && row.display_name)
   const { error: peopleError } = await admin.from('people').upsert(people, { onConflict: 'organization_id,source_system,source_employee_id' })
-  if (peopleError) return json({ error: 'Could not approve this import.' }, 500)
+  if (peopleError) return json({ error: `Could not approve this import: ${peopleError.message}` }, 500)
   await admin.from('people_import_rows').update({ row_status: 'imported' }).eq('import_run_id', run.id).eq('row_status', 'valid')
   await admin.from('import_runs').update({ status: 'imported', processed_at: new Date().toISOString() }).eq('id', run.id)
   return json({ status: 'imported', imported_rows: people.length })
