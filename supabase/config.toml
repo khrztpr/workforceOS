@@ -1,4 +1,0 @@
-[functions.sharepoint-roster-ingest]
-# Power Automate is not a Supabase Auth user. The function verifies its own
-# shared secret before it can use privileged server-side access.
-verify_jwt = false
