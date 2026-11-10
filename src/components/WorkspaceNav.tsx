@@ -2,7 +2,7 @@ import { useState } from 'react'
 import type { LucideIcon } from 'lucide-react'
 import { BarChart3, ChevronDown, FileBarChart, Home, LogOut, Settings, Truck, UsersRound } from 'lucide-react'
 
-export type WorkspaceSection = 'Home Page' | 'Analytics' | 'Employee Directory' | 'Fleet Management' | 'Data & Reports' | 'General Settings' | 'Account Settings'
+export type WorkspaceSection = 'Home Page' | 'Analytics' | 'Employee Directory' | 'HR & Training' | 'Fleet Management' | 'Data & Reports' | 'General Settings' | 'Account Settings'
 
 type Group = { label: string; icon: LucideIcon; children?: WorkspaceSection[]; section?: WorkspaceSection }
 
@@ -10,6 +10,7 @@ const groups: Group[] = [
   { label: 'Home Page', icon: Home, section: 'Home Page' },
   { label: 'Analytics', icon: BarChart3, section: 'Analytics' },
   { label: 'Employee Management', icon: UsersRound, children: ['Employee Directory'] },
+  { label: 'HR & Training', icon: UsersRound, section: 'HR & Training' },
   { label: 'Fleet Management', icon: Truck, section: 'Fleet Management' },
   { label: 'Data & Reports', icon: FileBarChart, section: 'Data & Reports' },
   { label: 'Settings', icon: Settings, children: ['General Settings', 'Account Settings'] },
